@@ -353,7 +353,7 @@ if(!localStorage.getItem("atg_seed_z3")){for(const c in Z3SEED){const s=SITES.fi
 async function expZ(){if(typeof ExcelJS==="undefined")return alert("Excel library didn't load. Check your internet connection.");
 const{sites,zone,division,project,tag}=exportScope();if(!sites.length)return alert("No sites match the selected export scope.");
 try{toast("Preparing workbook…");const wb=new ExcelJS.Workbook();await wb.xlsx.load(Uint8Array.from(atob(TPL),c=>c.charCodeAt(0)).buffer);
-const A=sites.slice().sort((a,b)=>(a.zn||"").localeCompare(b.zn||"")||(a.p<b.p?1:a.p>b.p?-1:0)||a.n-b.n),AZ=wb.getWorksheet("All zone wise sites"),SS=wb.getWorksheet("Survey Sheet"),SM=wb.getWorksheet("Summary"),RS=wb.getWorksheet("Remaining Sites"),GD=wb.getWorksheet("Guide");if(!AZ||!SS||!SM||!RS||!GD)throw new Error("template sheets are missing");
+const A=sites.slice().sort((a,b)=>(a.zn||"").localeCompare(b.zn||"")||(a.p<b.p?1:a.p>b.p?-1:0)||a.n-b.n),AZ=wb.getWorksheet("All zone wise sites"),SS=wb.getWorksheet("Survey Sheet"),SM=wb.getWorksheet("Summary"),RS=wb.getWorksheet("Remaining Sites"),GD=wb.getWorksheet("Guide");if(!AZ||!SS||!SM||!RS||!GD)throw new Error("template sheets are missing");AZ.getColumn(22).hidden=true;AZ.getColumn(23).hidden=true;
 for(let r=2;r<=3000;r++)for(let c=1;c<=20;c++)AZ.getCell(r,c).value=null;
 const th={style:"thin",color:{argb:"FFBFBFBF"}},BD={top:th,left:th,bottom:th,right:th},sty=(x,h)=>x.eachCell({includeEmpty:true},z=>{z.font={name:"Arial",size:10};z.border=BD;z.alignment={vertical:"middle",horizontal:h||"left"}}),nv=v=>num(v)!=null?num(v):(v||""),PH={};
 for(const s of A)for(const t of (g(s).tanks||[]))if(t.id)PH[s.code+"|"+t.id]=await pget(s.code+"|"+t.id);
