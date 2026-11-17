@@ -48,17 +48,158 @@ header{background:linear-gradient(90deg,#0b2447,#1e293b)}.k{box-shadow:0 2px 8px
 </style>
 <style>
 .top-scroll-source{overflow-x:hidden!important;scrollbar-width:auto!important}
-.top-scroll-proxy{position:absolute;left:0;top:0;z-index:20;height:14px;overflow:hidden;background:var(--panel);border:1px solid var(--b);border-radius:7px;cursor:grab;touch-action:none}
+.top-scroll-proxy{position:absolute;left:0;top:auto;bottom:auto;z-index:20;height:14px;overflow:hidden;background:var(--panel);border:1px solid var(--b);border-radius:7px;cursor:grab;touch-action:none}
 .top-scroll-proxy-track{position:absolute;inset:3px 4px;background:var(--field);border-radius:4px}
 .top-scroll-proxy-thumb{position:absolute;top:0;bottom:0;min-width:20px;background:var(--m);border-radius:4px}
 .top-scroll-proxy:hover .top-scroll-proxy-thumb{background:var(--accent)}
 #md>div .det{width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script></head><body>
+<style>
+.login #lgb{position:relative;isolation:isolate;border:1px solid transparent;background:linear-gradient(var(--p),var(--p)) padding-box,linear-gradient(125deg,#38bdf8,#6366f1,#d946ef,#14b8a6,#38bdf8) border-box;box-shadow:0 0 0 1px #38bdf833,0 0 26px #3b82f644,0 18px 48px var(--shadow)}
+.login #lgb:before{content:"";position:absolute;inset:-2px;border-radius:inherit;background:linear-gradient(125deg,#38bdf8,#6366f1,#d946ef,#14b8a6,#38bdf8);background-size:250% 250%;filter:blur(13px);opacity:.28;z-index:-1;animation:loginGlow 12s ease-in-out infinite}
+@keyframes loginGlow{0%,100%{background-position:0% 50%;opacity:.2}50%{background-position:100% 50%;opacity:.4}}
+@media(prefers-reduced-motion:reduce){.login #lgb:before{animation:none}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script><style>
+
+/* Responsive layout and accessible modal controls */
+.portal-modal-shell{
+  width:min(920px,calc(100vw - 28px));
+  max-width:calc(100vw - 28px);
+  max-height:calc(100dvh - 28px);
+  overflow:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  background:var(--p);
+  color:var(--t);
+  border:1px solid var(--b);
+  border-radius:12px;
+  padding:clamp(12px,2.2vw,18px);
+}
+.portal-modal-shell .modal-titlebar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  width:100%;
+  padding:0 0 8px;
+  background:var(--p);
+}
+.portal-modal-shell .modal-close{
+  flex:0 0 auto;
+  width:36px;
+  height:36px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  font-size:18px;
+  line-height:1;
+  border-radius:8px;
+}
+.portal-modal-shell table{min-width:0}
+/* Survey entry: keep the site heading, map link and instructions fixed. */
+#md:has(.det){align-items:center;overflow:hidden}
+#md .det{display:flex;flex-direction:column;width:min(1300px,98vw)!important;max-width:98vw!important;height:min(92dvh,900px);max-height:92dvh!important;overflow:hidden!important;padding:12px;min-height:0}
+#md .det-fixed{flex:0 0 auto;background:var(--p);position:relative;z-index:2}
+#md .det-body{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;padding-bottom:8px}
+#md .det-table-scroll{position:relative;max-width:100%;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain}
+#md .det-table-scroll table{width:max-content;min-width:100%}
+#md .det-body>table{width:max-content;min-width:100%}
+#md .det-body>table td:first-child{min-width:120px}
+.portal-modal-shell img,.portal-modal-shell canvas,.portal-modal-shell iframe{max-width:100%}
+#lgb{
+  width:min(520px,calc(100vw - 32px));
+  max-width:calc(100vw - 32px);
+  height:auto;
+  max-height:none;
+  overflow:visible;
+  padding:clamp(16px,4vw,28px);
+}
+#lgb input{max-width:100%;min-width:0}
+#lgb form{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px}
+#lgb form input{flex:1 1 190px}
+#lgb form button{flex:0 0 auto}
+#ai{max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px)}
+#ai form{display:flex;gap:8px}
+#ai form input{min-width:0;flex:1}
+.fl>*{max-width:100%;min-width:0}
+#tbl{overflow:auto;overscroll-behavior:contain}
+@media(max-width:760px){
+  body{height:auto;min-height:100dvh;overflow-x:hidden;overflow-y:auto}
+  header{flex:0 0 auto}
+  header h1{min-width:0;overflow-wrap:anywhere}
+  header #who{max-width:100%;overflow-wrap:anywhere}
+  .kpis{width:100%;min-width:0}
+  .krow{max-width:100%}
+  .prow{max-width:100%;min-width:0}
+  .fl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+  .fl input:first-child{grid-column:1/-1;width:100%;min-width:0}
+  .fl select{width:100%;min-width:0}
+  main{height:62vh;min-height:390px;flex:none;min-width:0}
+  .portal-modal-shell{width:calc(100vw - 20px);max-width:calc(100vw - 20px);max-height:calc(100dvh - 20px);padding:12px}
+  .portal-modal-shell table{display:block;max-width:100%;overflow-x:auto}
+  #ai{left:12px;right:12px;top:12px;bottom:12px;width:auto;max-width:none;transform:none}
+}
+@media(max-width:480px){
+  header{gap:6px;padding:8px}
+  header h1{font-size:14px}
+  header>button,header>select{font-size:12px;padding:6px}
+  header label{font-size:11px!important}
+  .fl{grid-template-columns:minmax(0,1fr)}
+  .fl input:first-child{grid-column:auto}
+  main{margin:0 8px 8px;height:58vh;min-height:340px}
+  .lg{max-width:calc(100% - 16px);white-space:normal}
+  #lgb{width:calc(100vw - 24px);max-width:calc(100vw - 24px);height:auto;max-height:none;overflow:visible}
+  #lgb form{display:grid;grid-template-columns:minmax(0,1fr)}
+  #lgb form input,#lgb form button{width:100%;min-width:0}
+  .portal-modal-shell{width:calc(100vw - 12px);max-width:calc(100vw - 12px);max-height:calc(100dvh - 12px);padding:10px}
+  .portal-modal-shell .modal-titlebar{gap:8px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+</style>
+<style>
+/* Excluded Sites uses the same pinned heading / independently scrolling body as Survey Entry. */
+#md:has(.excluded-shell){align-items:center;overflow:hidden}
+#md:has(.excluded-shell)>.portal-modal-shell{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+#md .excluded-shell{display:flex;flex:1 1 auto;flex-direction:column;width:100%;max-width:100%;height:auto;max-height:none;min-height:0;overflow:hidden;padding:12px}
+#md .portal-modal-shell:has(.det){display:flex;flex-direction:column;min-height:0;overflow:hidden}
+#md .portal-modal-shell .det{flex:1 1 auto;width:100%!important;max-width:100%!important;height:auto;max-height:none!important;min-height:0;overflow:hidden!important}
+#md .excluded-fixed{flex:0 0 auto;background:var(--p);position:relative;z-index:2}
+#md .excluded-fixed>p:first-child{margin-top:0}
+#md .excluded-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+#md .excluded-controls input{flex:1 1 260px;min-width:180px}
+#md .excluded-body{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;padding-bottom:8px}
+#md .excluded-body table{width:max-content;min-width:100%}
+#md .excluded-body th{position:sticky;top:0;z-index:1}
+@media(max-width:600px){#md .excluded-shell{width:calc(100vw - 12px);max-width:calc(100vw - 12px);height:calc(100dvh - 12px);max-height:calc(100dvh - 12px);padding:10px}#md .excluded-controls{align-items:stretch}#md .excluded-controls input{flex-basis:100%;width:100%}}
+
+/* Restrained neon identity for the access panel, tuned separately for each theme. */
+:root{--login-neon-a:#22d3ee;--login-neon-b:#818cf8;--login-neon-c:#c084fc;--login-glow:rgba(34,211,238,.18);--login-button:#164e63}
+[data-theme="light"]{--login-neon-a:#0284c7;--login-neon-b:#4f46e5;--login-neon-c:#7c3aed;--login-glow:rgba(37,99,235,.12);--login-button:#e0efff}
+[data-theme="care"]{--login-neon-a:#0f9f8f;--login-neon-b:#648b55;--login-neon-c:#8b9b4d;--login-glow:rgba(15,159,143,.12);--login-button:#e1eee2}
+.login #lgb{position:relative;isolation:isolate;overflow:visible;border:1px solid transparent;border-radius:16px;background:linear-gradient(var(--p),var(--p)) padding-box,linear-gradient(125deg,var(--login-neon-a),var(--login-neon-b),var(--login-neon-c),var(--login-neon-a)) border-box;box-shadow:0 0 0 1px var(--login-glow),0 10px 34px var(--login-glow),0 18px 48px var(--shadow);text-align:left}
+.login #lgb:before{content:"";position:absolute;inset:-2px;border-radius:inherit;background:linear-gradient(125deg,var(--login-neon-a),var(--login-neon-b),var(--login-neon-c));filter:blur(15px);opacity:.22;z-index:-1;pointer-events:none}
+.login #lgb h2{margin:0 0 6px;text-align:center;letter-spacing:.2px;text-shadow:0 0 16px var(--login-glow)}
+.login #lgb>p:first-of-type{text-align:center;margin:0 0 18px}
+.login #lgb hr{border:0;border-top:1px solid var(--b);margin:18px 0}
+.login #lgb form{display:flex;flex-wrap:wrap;align-items:center;gap:9px}
+.login #lgb form input{flex:1 1 190px;min-width:0;background:var(--field);border:1px solid color-mix(in srgb,var(--login-neon-a) 38%,var(--b));border-radius:8px;min-height:40px;box-shadow:inset 0 1px 2px var(--shadow)}
+.login #lgb form input:focus{outline:2px solid color-mix(in srgb,var(--login-neon-a) 65%,transparent);outline-offset:2px;border-color:var(--login-neon-a)}
+.login #lgb form button{flex:0 0 auto;min-height:40px;padding:8px 18px;border:1px solid var(--login-neon-a);border-radius:8px;background:var(--login-button);color:var(--t);font-weight:650;box-shadow:0 0 14px var(--login-glow);transition:box-shadow .18s,transform .18s,border-color .18s}
+.login #lgb form button:hover{transform:translateY(-1px);border-color:var(--login-neon-b);box-shadow:0 0 20px var(--login-glow)}
+.login #lgb>p:last-child{text-align:center;line-height:1.5;margin-bottom:0}
+[data-theme="light"] .login #lgb form button,[data-theme="care"] .login #lgb form button{color:#203047}
+@media(prefers-reduced-motion:reduce){.login #lgb:before{animation:none}.login #lgb form button{transition:none}}
+</style>
+</head><body>
 <div class="login" id="lg"><div id="lgb"></div></div>
 <header><button onclick="sbT()" aria-label="Open navigation" title="Open navigation" style="font-size:18px">&#9776;</button><h1>⛽ ATG Rollout Portal <small style="font-weight:400;color:var(--m)">Automatic Tank Gauging rollout</small></h1><span id="cnt" style="color:var(--m)"></span><span class="sp"></span><button id="vm" class="on" onclick="view('map')">🗺 Map</button><button id="vt" onclick="view('tbl')">📋 Table</button><label for="themeMode" style="color:var(--m);font-size:12px">Theme</label><select id="themeMode" aria-label="Color theme" onchange="setTheme(this.value)"><option value="dark">Dark</option><option value="light">Light</option><option value="care">Eye care</option></select><span id="who" style="color:var(--m)"></span></header>
 <input id="rf" type="file" hidden accept=".json" onchange="rs(this)"><div id="sbm" onclick="sbT()"></div>
-<aside id="sb"><div class="sbh"><b>Workspace</b><button onclick="sbT()" aria-label="Close navigation" title="Close navigation">✕</button></div><div class="sbs">NAVIGATION</div><button onclick="view('map');sbT()">🗺 Site map</button><button onclick="view('tbl');sbT()">📋 Site list</button><div class="sbs">SITE WORK</div><button onclick="sbT();svPick()">📝 Survey data</button><button class="mgr" onclick="sbT();mng()">⚙ Site directory</button><button class="adm" onclick="sbT();excludedUI()">📦 Excluded sites</button><button class="mgr" onclick="sbT();impHome()">⬆ Import site data</button><button class="adm" onclick="sbT();fmtUI()">🧩 Import formats</button><button onclick="sbT();rpUI()">📥 Reports &amp; lists</button><button onclick="sbT();dt()">📊 Excel exports &amp; backup</button><button class="adm" id="ub" onclick="sbT();undo()">↶ Undo last change</button><div class="sbs">INSIGHTS</div><button onclick="sbT();ov()">📈 Project overview</button><button onclick="sbT();ai.classList.add('open')">🤖 Data assistant</button><div class="sbs own">ADMINISTRATION</div><button class="own" onclick="sbT();tokUI()">🔑 User access</button><button class="own" onclick="sbT();team()">🧾 Team activity</button></aside>
+<aside id="sb"><div class="sbh"><b>Workspace</b><button onclick="sbT()" aria-label="Close navigation" title="Close navigation">✕</button></div><div class="sbs">NAVIGATION</div><button onclick="view('map');sbT()">🗺 Site map</button><button onclick="view('tbl');sbT()">📋 Site list</button><div class="sbs">SITE WORK</div><button onclick="sbT();svPick()">📝 Survey data</button><button class="mgr" onclick="sbT();mng()">⚙ Site directory</button><button onclick="sbT();excludedUI()">📦 Excluded sites</button><button class="mgr" onclick="sbT();impHome()">⬆ Import site data</button><button class="adm" onclick="sbT();fmtUI()">🧩 Import formats</button><button onclick="sbT();rpUI()">📥 Reports &amp; lists</button><button onclick="sbT();dt()">📊 Excel exports &amp; backup</button><button id="ub" onclick="sbT();undo()">↶ Undo last change</button><button id="rb" onclick="sbT();redo()">↷ Redo last change</button><div class="sbs">INSIGHTS</div><button onclick="sbT();ov()">📈 Project overview</button><button onclick="sbT();ai.classList.add('open')">🤖 Data assistant</button><div class="sbs own">ADMINISTRATION</div><button class="own" onclick="sbT();tokUI()">🔑 User access</button><button class="own" onclick="sbT();team()">🧾 Team activity</button></aside>
 <section class="kpis" id="kp" aria-label="Project dashboard"></section>
 <div class="fl"><input id="q" placeholder="Search name / code / city" oninput="draw()">
 <select id="pf" onchange="draw()"><option value="">Overall (both projects)</option><option value="1000">1000-site project</option><option value="1151">1151-site project</option></select><select id="zf" onchange="draw()"><option value="">All zones</option></select><select id="df" onchange="draw()"><option value="">All divisions</option></select>
@@ -77,7 +218,7 @@ const DN={BWP:"Bahawalpur",DIK:"D.I.Khan",FSD:"Faisalabad",GRW:"Gujranwala",HYD:
 const SURVEYED=["101543", "101545", "101548", "101580", "101591", "101594", "101608", "101611", "101625", "101664", "101665", "101674", "101683", "101694", "101697", "101701", "101703", "101704", "101705", "101713", "101728", "101756", "101767", "101778", "101817", "101823", "101864", "101893", "101903", "101906", "101953", "101999", "102361", "102369", "102385", "102386", "102401", "102404", "102413", "102430", "102489", "102520", "102528", "102619", "102649", "102651", "102687", "102805", "102925", "102943", "102949", "103067", "103087", "103105", "103177", "103183", "103207", "103218", "103237", "103243", "103261", "103275", "103284", "103347", "103360", "103363", "103372", "103377", "103388", "103407", "103416", "103417", "103422", "103428", "103429", "103431", "103443", "103451", "103475", "103488", "103506", "103520", "103540", "103549", "103554", "103583", "103630", "103633", "103637", "103640", "103647", "103653", "103665", "103666", "103683", "103684", "103689", "103707", "103730", "103738", "103747", "103761", "103771", "103778", "103806", "103807", "103808", "103809", "103819", "103850", "103917", "103934", "103939", "104001", "104037", "104039", "104053", "104058", "104060", "104121", "104122", "104139", "104142", "104147", "104160", "104186", "104207", "104222", "104228", "104235", "104238", "104259", "104260", "104265", "104268", "104271", "104272", "104279", "104303", "104306", "104310", "104311", "104312", "104315", "104328", "104382", "104406", "104407", "104455", "104459", "104469", "104493", "104509", "104514", "104527", "104541", "104547", "104552", "104560", "104566", "104570", "104574", "104576", "104580", "104594", "104601", "104610", "104619", "104625", "104639", "104644", "104648", "104669", "104721", "104740", "104749", "104750", "104752", "104764", "104773", "104778", "104788", "104789", "104825", "104829", "104848", "104885", "104897", "104903", "104924", "104936", "104979", "105008", "105011", "105023", "105029", "105111", "105125", "105180", "105211", "105215", "105229", "105247", "105267", "109509", "109993", "110232", "110299", "110463", "110523", "110524", "110571", "110575", "110604", "110684", "110707", "110711", "110721", "110785", "110788", "110793", "110806", "110824", "110835", "110852", "110863", "110909", "110914", "110959", "111165", "111197", "111206", "111218", "111247", "111254", "111277", "111282", "111288", "111340", "111408", "111486", "111503", "111504", "111548", "111641", "111648", "111676", "111697", "111738", "111739", "111791", "111800", "111825", "111859", "111885", "111924", "112005", "112014", "112044", "112087", "112126", "112187", "112202", "112339", "112361", "112660", "112716", "112756", "112839", "112840", "112924", "113336", "113349", "113406", "113537", "113551", "113569", "113672", "113690", "113709", "113766", "113800", "113875", "113934", "114016", "114019", "114034", "114050", "114056", "114073", "114205", "114233", "114268", "114308", "114328", "114339", "114358", "114363", "114394", "114403", "114425", "114444", "114449", "114450", "114458", "114479", "114511", "114537", "114572", "114584", "114587", "114621", "114654", "114673", "114685", "114686", "114691", "114724", "114734", "114735", "114753", "114780", "114786", "114798", "114806", "114811", "114835", "114838", "114870", "114894", "114905", "114910", "114944", "114971", "114980", "115017", "115029", "115032", "115033", "115049", "115067", "115077", "115097", "115142", "115187", "115205", "115226", "115228", "115229", "115252", "115270", "115282", "115311", "115316", "115330", "115345", "115348", "115366", "115375", "115402", "115435", "115470", "115474", "115475", "115499", "115508", "115524", "115535", "115537", "115540", "115547", "115559", "115561", "115584", "115591", "115593", "115597", "115598", "115616", "115641", "115670", "115690", "115705", "115707", "115709", "115715", "115742", "115746", "115761", "115764", "115771", "115772", "115786", "115791", "115793", "115800", "115802", "115806", "115829", "115846", "115853", "115948", "115963", "115971", "115981", "115986", "116007", "116009", "116023", "116027", "116033", "116044", "116083", "116085", "116096", "116108", "116121", "116136", "116144", "116151", "116153", "116158", "116176", "116183", "116194", "116198", "116200", "116202", "116204", "116207", "116219", "116222", "116228", "116229", "116235", "116247", "116248", "116250", "116263", "116274", "116290", "116292", "116294", "116302", "116308", "116354", "116355", "116358", "116373", "116387", "116396", "116409", "116423", "116450", "116452", "116467", "116470", "116474", "116481", "116489", "116493", "116495", "116590", "116599", "116622", "116639", "116642", "116657", "116658", "116661", "116673", "116686", "116713", "116714", "116716", "116717", "116729", "116759", "116768", "116769", "116825", "116858", "116915", "116919", "116921", "116925", "116926", "116931", "116950", "116960", "116972", "116974", "116979", "116989", "116990", "116991", "117000", "117009", "117010", "117011", "117012", "117026", "117032", "117033", "117078", "117083", "117114", "117116", "117117", "117162", "117168", "117195", "117201", "117215", "117223", "117230", "117290", "117310", "117324", "117328", "117336", "117337", "117343", "117358", "117384", "117403", "117422", "117423", "117439", "117443", "117447", "117474", "117475", "117539", "117542", "117550", "117552", "117561", "117568", "117577", "117580", "117590", "117592", "117622", "117634", "117643", "117688", "117689", "117709", "117734", "117737", "117748", "117777", "117780", "117793", "117828", "117842", "117855", "117859", "117877", "117904", "117919", "117928", "117946", "117995", "118012", "118014", "118025", "118028", "118032", "118042", "118058", "118065", "118073", "118074", "118075", "118076", "118085", "118091", "118099", "118100", "118108", "118114", "118118", "118123", "118217", "118225", "118283", "118318", "118338", "118344", "118352", "118362", "118365", "118367", "118383", "118386", "118391", "118395", "118421", "118442", "118462", "118463", "118465", "118488", "118514", "118544", "118578", "118579", "118590", "118593", "118607", "118625", "118634", "118643", "118647", "118665", "118678", "118724", "118755", "118770", "118784", "118838", "118855", "118870", "118878", "118894", "118905", "118906", "118918", "118957", "118967", "118970", "118978", "119003", "119011", "119019", "119038", "119062", "119068", "119072", "119129", "119131", "119145", "119156", "119184", "119203", "119205", "119208", "119210", "119216", "119229", "119230", "119232", "119235", "119237", "119259", "119270", "119301", "119313", "119314", "119318", "119325", "119328", "119347", "119348", "119370", "119376", "119377", "119381", "119383", "119416", "119429", "119447", "119448", "119468", "119479", "119483", "119485", "119492", "119502", "119506", "119507", "119511", "119512", "119523", "119524", "119532", "119534", "119536", "119549", "119557", "119573", "119583", "119584", "119590", "119660", "119725", "119763", "119785", "119786", "119790", "119797", "119799", "119827", "119836", "119843", "119851", "119855", "119897", "119905", "119907", "119922", "119961", "119971", "120035", "120080", "120088", "120095", "120096", "120133", "120134", "120157", "120163", "120182", "120209", "120210", "120216", "120242", "120260", "120290", "120292", "120404", "120435", "120436", "120439", "120444", "120470", "120479", "120549", "120602", "120603", "120818", "120828"];
 let ME=null,PEND=null,IMP=null;
 // Auth/token records are remote; existing operational portal data remains in local storage.
-const saveSites=()=>{try{localStorage.setItem("atg_sites",JSON.stringify(SITES))}catch(e){};queueCloudSync()};
+const saveSites=()=>{try{localStorage.setItem("atg_sites",JSON.stringify(SITES))}catch(e){};queueCloudSync();commitUndo("Update site details")};
 const own=()=>ME&&ME.role==="owner",adm=()=>ME&&(ME.role==="owner"||ME.role==="admin"),isZone=()=>ME&&ME.role==="zone",mgr=()=>ME&&(adm()||isZone()),vis=s=>!!ME&&!!s&&(isZone()?Array.isArray(ME.zones)&&ME.zones.includes(s.zn):Array.isArray(ME.divs)&&(ME.divs.includes("*")||ME.divs.includes(s.d))),V=()=>SITES.filter(vis),can=s=>!!s&&ME&&(adm()||((ME.role==="division"||isZone())&&vis(s)));
 const ST=[["survey","Surveyed"],["port","Site ports done"],["ready","Site readiness"],["comm","ATG commissioning"]];
 const COL={none:"#64748b",survey:"#3b82f6",port:"#f59e0b",ready:"#a855f7",comm:"#22c55e"};
@@ -87,11 +228,11 @@ const g=s=>S[s.code]||(S[s.code]={});
 const portHeight=v=>{const h=String(v??"").trim();return !h||/^(no|-)$/i.test(h)?"":h};
 function normalizePortHeights(data=S){let changed=false;Object.values(data).forEach(d=>{if(d&&Array.isArray(d.tanks))d.tanks.forEach(t=>{const h=portHeight(t.hgt);if(t.hgt!==h){t.hgt=h;changed=true}})});return changed}
 if(normalizePortHeights())try{localStorage.setItem("atg",JSON.stringify(S))}catch(e){console.error("Could not save normalized port heights",e);alert("Port height values were normalized for this session but could not be saved to browser storage. Check browser storage settings.")}
-function save(){try{localStorage.setItem("atg",JSON.stringify(S))}catch(e){}touch("updated site data");queueCloudSync()}
+function save(){try{localStorage.setItem("atg",JSON.stringify(S))}catch(e){}touch("updated site data");queueCloudSync();commitUndo("Update site data")}
 function stage(s){const d=g(s);if(d.comm)return"comm";if(d.ready)return"ready";if(d.port)return"port";if(d.survey)return"survey";return"none"}
 async function H(s){try{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("atg|"+s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}catch(e){let h=5381;for(const c of"atg|"+s)h=(h*33^c.charCodeAt(0))>>>0;return"f"+h}}
 function setTheme(theme,sync=true){theme=["light","care"].includes(theme)?theme:"dark";document.documentElement.dataset.theme=theme;const s=document.getElementById("themeMode");if(s)s.value=theme;try{localStorage.setItem("atg_theme",theme)}catch(e){console.warn("Could not save theme preference",e)}if(sync)queueMetaSave("theme",theme)}
-async function enter(k){ME=k;try{await cloudBootstrap()}catch(e){ME=null;alert(e.message||"Could not load shared portal data.");return false}setTimeout(()=>touch("logged in",1),0);document.getElementById("lg").remove();document.querySelectorAll(".adm").forEach(e=>e.style.display=adm()?"":"none");document.querySelectorAll(".mgr").forEach(e=>e.style.display=mgr()?"":"none");document.querySelectorAll(".own").forEach(e=>e.style.display=own()?"":"none");who.textContent=k.label+" · "+(k.role==="zone"?"Zone user":k.role);refill();draw();menu(1);ubl();return true}
+async function enter(k){ME=k;try{await cloudBootstrap()}catch(e){ME=null;alert(e.message||"Could not load shared portal data.");return false}setTimeout(()=>touch("logged in",1),0);const login=document.getElementById("lg");if(login)login.remove();document.querySelectorAll(".adm").forEach(e=>e.style.display=adm()?"":"none");document.querySelectorAll(".mgr").forEach(e=>e.style.display=mgr()?"":"none");document.querySelectorAll(".own").forEach(e=>e.style.display=own()?"":"none");who.textContent=k.label+" · "+(k.role==="zone"?"Zone user":k.role);refill();draw();menu(1);ubl();return true}
 function lgUI(){document.getElementById("lgb").innerHTML=`<h2>ATG Rollout Portal</h2><p style="color:var(--m)">Team access token</p><form onsubmit="go();return false"><input id="tok" type="password" autocomplete="off" placeholder="Team access token"> <button type="submit">Enter</button></form><hr style="border-color:var(--b)"><p style="color:var(--m)">Owner login</p><form onsubmit="goOwner();return false"><input id="og" type="email" autocomplete="username" placeholder="Owner email address" required> <input id="o1" type="password" autocomplete="current-password" placeholder="Owner key" required> <button type="submit">Owner</button></form><p style="color:var(--m);font-size:12px">Use your owner email and the owner key configured in Supabase.</p>`}
 async function portalAuthRequest(payload){
  const r=await fetch(SUPABASE_URL+"/functions/v1/portal-auth",{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify(payload)});
@@ -157,7 +298,7 @@ function applyCloudSnapshot(d){
  if(CLOUD.meta.theme)setTheme(CLOUD.meta.theme,false);
  CLOUD.lastUpdated=d.updatedAt||null;cloudSnapshot();
 }
-async function cloudMetaSave(key,value){if(!CLOUD.ready||!ME)return;try{await cloudRequest("shared_meta_save",{key,payload:value})}catch(e){console.warn("Shared "+key+" sync failed:",e)}}
+async function cloudMetaSave(key,value){if(!CLOUD.ready||!ME)return;try{await cloudRequest("shared_meta_save",{key,payload:value})}catch(e){if(key==="history"){console.error("Shared undo history sync failed:",e);toast("Undo history could not be synced across devices. Check your connection and try again.")}else console.warn("Shared "+key+" sync failed:",e)}}
 function queueMetaSave(key,value){if(!CLOUD.ready||!ME)return;if(CLOUD.metaTimers[key])clearTimeout(CLOUD.metaTimers[key]);CLOUD.metaTimers[key]=setTimeout(()=>cloudMetaSave(key,value),500)}
 function deferMasterListSync(error){if(!/unsupported shared metadata key/i.test(String(error&&error.message||error)))throw error;CLOUD.masterSyncBlocked=true;CLOUD.masterSyncWarning="You are signed in, but the master-list update is paused because the shared backend does not support Excluded Sites yet. The shared site list and survey data were left unchanged.";console.warn("Master-list sync deferred until the shared backend supports Excluded Sites metadata:",error);alert(CLOUD.masterSyncWarning)}
 async function migrateAllLocalAssets(localMeta){
@@ -354,20 +495,109 @@ if(id==="gps")return ls(A.filter(s=>!hasGPS(s)),"No GPS")}
 
 const sbT=()=>{sb.classList.toggle("open");sbm.classList.toggle("open")};
 function toast(m){if(m==="Workbook downloaded")finishExportStatus("Download started. Check your browser’s Downloads list.");const d=document.createElement("div");d.textContent=m;d.style.cssText="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#16a34a;color:#fff;padding:9px 16px;border-radius:8px;z-index:5000";document.body.append(d);setTimeout(()=>d.remove(),2800)}
+function readHistory(value){if(value&&typeof value==="object")return value;try{return JSON.parse(localStorage.getItem("atg_hist")||"{}")}catch(e){console.warn("Could not read shared undo history:",e);return {}}}
+let UNDO_HISTORY={undo:[],redo:[]};
 let UN=[];
-function snap(l){touch(l,1);UN.push({l,A:JSON.stringify(SITES),B:JSON.stringify(S),C:JSON.stringify(EXCLUDED)});if(UN.length>8)UN.shift();ubl()}
-function ubl(){const e=document.getElementById("ub");if(e)e.textContent=UN.length?"↶ Undo: "+UN[UN.length-1].l:"↶ Nothing to undo"}
-async function undo(){if(!adm())return;const u=UN.pop();if(!u)return alert("Nothing to undo");if(u.C&&u.C!==JSON.stringify(EXCLUDED)){try{await persistExcludedSites(JSON.parse(u.C))}catch(e){UN.push(u);ubl();return alert(e.message)}}SITES=JSON.parse(u.A);S=JSON.parse(u.B);saveSites();save();refill();draw();ubl();toast("Undone: "+u.l);if(md.style.display==="flex")mng()}
-const W=(ti,b)=>{md.style.display="flex";md.innerHTML=`<div style="width:920px;max-width:95vw;max-height:90vh;overflow:auto"><div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">${ti}</h3><button onclick="md.style.display='none'">✕</button></div><hr style="border-color:var(--b)">${b}</div>`};
+function loadUndoHistory(value){const h=readHistory(value);UNDO_HISTORY={undo:Array.isArray(h._undo)?h._undo:[],redo:Array.isArray(h._redo)?h._redo:[]};UN=UNDO_HISTORY.undo;ubl()}
+loadUndoHistory();
+let UNDO_BASE=null,UNDO_PENDING=null,UNDO_APPLYING=false,UNDO_DEFERRED=false,UNDO_TIMER=null,UNDO_QUEUED_LABEL="";
+const undoCopy=v=>v===undefined?undefined:JSON.parse(JSON.stringify(v));
+function undoState(){return{sites:undoCopy(SITES)||[],records:undoCopy(S)||{},excluded:undoCopy(EXCLUDED)||[]}}
+UNDO_BASE=undoState();
+function snap(l){if(UNDO_TIMER){clearTimeout(UNDO_TIMER);UNDO_TIMER=null;finishUndo(UNDO_QUEUED_LABEL)}touch(l,1);UNDO_PENDING={label:l,time:Date.now()}}
+function undoMap(list,key){const out={};for(const item of list||[]){const k=String(key(item));if(k&&k!=="undefined")out[k]=item}return out}
+function undoChanges(before,after,key,value=x=>x){
+ const a=undoMap(before,key),b=undoMap(after,key),out={};
+ for(const k of new Set([...Object.keys(a),...Object.keys(b)])){const av=value(a[k]),bv=value(b[k]);if(JSON.stringify(av)===JSON.stringify(bv))continue;out[k]={before:{has:Object.prototype.hasOwnProperty.call(a,k),value:undoCopy(av)},after:{has:Object.prototype.hasOwnProperty.call(b,k),value:undoCopy(bv)}}}
+ return out
+}
+const undoActor=()=>String(ME?.id||ME?.tokenId||ME?.label||"");
+function makeUndoEntry(before,after,label){
+ const siteChanges=undoChanges(before.sites,after.sites,x=>x.code),recordChanges=undoChanges(Object.entries(before.records).map(([code,value])=>({code,value})),Object.entries(after.records).map(([code,value])=>({code,value})),x=>x.code,x=>x?.value),excludedChanges=undoChanges(before.excluded,after.excluded,x=>x.site?.code),siteMap=new Map([...before.sites,...after.sites].map(x=>[String(x.code),x]));
+ for(const code of Object.keys(recordChanges))if(!siteMap.has(code)){const archived=[...before.excluded,...after.excluded].find(x=>String(x.site?.code)===code);if(archived)siteMap.set(code,archived.site)}
+ const codes=new Set([...Object.keys(siteChanges),...Object.keys(recordChanges),...Object.keys(excludedChanges)]),scope=[...codes].map(code=>{const s=siteMap.get(code)||{};return{code,division:s.d||"",zone:s.zn||DZ[s.d]||s.z||""}});
+ return{id:uid(),label,actor:undoActor(),actorLabel:ME.label,role:ME.role,time:Date.now(),scope,changes:{sites:siteChanges,records:recordChanges,excluded:excludedChanges}}
+}
+function undoEqual(a,b){return JSON.stringify(a)===JSON.stringify(b)}
+function mergeUndoEntry(previous,next){
+ for(const group of ["sites","records","excluded"])for(const [key,value]of Object.entries(next.changes[group])){const old=previous.changes[group][key];previous.changes[group][key]=old?{before:old.before,after:value.after}:value;if(undoEqual(previous.changes[group][key].before,previous.changes[group][key].after))delete previous.changes[group][key]}
+ previous.scope=next.scope;previous.time=next.time;return previous
+}
+function saveUndoHistory(){
+ let h=readHistory();h._undo=UNDO_HISTORY.undo;h._redo=UNDO_HISTORY.redo;
+ try{localStorage.setItem("atg_hist",JSON.stringify(h))}catch(e){console.error("Could not save undo history locally:",e)}
+ CLOUD.meta.history=h;queueMetaSave("history",h)
+}
+function finishUndo(fallback){
+ const after=undoState(),before=UNDO_BASE||after;UNDO_BASE=after;
+ if(UNDO_APPLYING||!ME||undoEqual(before,after)){UNDO_PENDING=null;return}
+ const pending=UNDO_PENDING&&Date.now()-UNDO_PENDING.time<30000?UNDO_PENDING:null,label=pending?.label||fallback||"Update site data";UNDO_PENDING=null;
+ const entry=makeUndoEntry(before,after,label),changed=Object.values(entry.changes).some(group=>Object.keys(group).length);
+ if(!changed)return;
+ const last=UNDO_HISTORY.undo[UNDO_HISTORY.undo.length-1];
+ if(last&&last.actor===entry.actor&&last.label===entry.label&&entry.time-last.time<5000&&undoEqual(last.scope.map(x=>x.code).sort(),entry.scope.map(x=>x.code).sort()))mergeUndoEntry(last,entry);
+ else UNDO_HISTORY.undo.push(entry);
+ if(UNDO_HISTORY.undo.length>8)UNDO_HISTORY.undo.shift();UNDO_HISTORY.redo=[];UN=UNDO_HISTORY.undo;saveUndoHistory();ubl()
+}
+function commitUndo(fallback){
+ if(UNDO_DEFERRED)return;
+ if(UNDO_APPLYING||!ME){if(UNDO_TIMER){clearTimeout(UNDO_TIMER);UNDO_TIMER=null}UNDO_BASE=undoState();UNDO_PENDING=null;return}
+ UNDO_QUEUED_LABEL=fallback||"Update site data";
+ if(UNDO_TIMER)clearTimeout(UNDO_TIMER);
+ UNDO_TIMER=setTimeout(()=>{UNDO_TIMER=null;finishUndo(UNDO_QUEUED_LABEL)},450)
+}
+function historyAllowed(entry){
+ if(!entry||!ME)return false;if(own())return true;if(entry.actor!==undoActor()||entry.role!==ME.role||!Array.isArray(entry.scope))return false;
+ if(ME.role==="admin")return true;
+ return entry.scope.length>0&&entry.scope.every(x=>vis({d:x.division,zn:x.zone}))
+}
+function historyIndex(stack){for(let i=stack.length-1;i>=0;i--)if(historyAllowed(stack[i]))return i;return-1}
+function ubl(){
+ const u=document.getElementById("ub"),r=document.getElementById("rb"),ui=historyIndex(UNDO_HISTORY.undo),ri=historyIndex(UNDO_HISTORY.redo);
+ if(u){u.disabled=ui<0;u.textContent=ui>=0?"↶ Undo: "+UNDO_HISTORY.undo[ui].label:"↶ Nothing to undo"}
+ if(r){r.disabled=ri<0;r.textContent=ri>=0?"↷ Redo: "+UNDO_HISTORY.redo[ri].label:"↷ Nothing to redo"}
+}
+function applyUndoChanges(current,changes,direction,key=x=>x.code){
+ const next=undoCopy(current),isArray=Array.isArray(next),map=isArray?undoMap(next,key):{...next};
+ for(const [key,change]of Object.entries(changes)){const expected=direction==="undo"?change.after:change.before,desired=direction==="undo"?change.before:change.after,has=Object.prototype.hasOwnProperty.call(map,key);
+  if(has!==expected.has||(has&&!undoEqual(map[key],expected.value)))throw new Error("This change conflicts with newer edits. Refresh the portal and choose the latest available change.");
+  if(desired.has)map[key]=undoCopy(desired.value);else delete map[key]
+ }
+ return isArray?Object.values(map):map
+}
+async function applyHistory(direction){
+ if(UNDO_TIMER){clearTimeout(UNDO_TIMER);UNDO_TIMER=null;finishUndo(UNDO_QUEUED_LABEL)}
+ const stack=direction==="undo"?UNDO_HISTORY.undo:UNDO_HISTORY.redo,other=direction==="undo"?UNDO_HISTORY.redo:UNDO_HISTORY.undo,index=historyIndex(stack);
+ if(index<0)return alert(direction==="undo"?"No changes you can undo are available.":"No changes you can redo are available.");
+ const entry=stack[index],before=undoState();let next;
+ try{
+  next={sites:applyUndoChanges(before.sites,entry.changes.sites,direction),records:applyUndoChanges(before.records,entry.changes.records,direction),excluded:applyUndoChanges(before.excluded,entry.changes.excluded,direction,x=>x.site?.code)};
+  UNDO_APPLYING=true;
+  if(!undoEqual(before.excluded,next.excluded))await persistExcludedSites(next.excluded);
+  SITES=next.sites;S=next.records;saveSites();save();if(CLOUD.ready)await cloudPush();
+  stack.splice(index,1);other.push(entry);if(other.length>8)other.shift();UN=UNDO_HISTORY.undo;UNDO_BASE=undoState();saveUndoHistory();refill();draw();ubl();toast((direction==="undo"?"Undone: ":"Redone: ")+entry.label)
+ }catch(e){
+   try{if(!undoEqual(EXCLUDED,before.excluded))await persistExcludedSites(before.excluded)}catch(rollbackError){console.error("Could not roll back excluded-site changes after failed "+direction+":",rollbackError)}
+  SITES=before.sites;S=before.records;EXCLUDED=before.excluded;UNDO_BASE=undoState();
+   try{localStorage.setItem("atg_excluded_sites",JSON.stringify(EXCLUDED));saveSites();save();if(CLOUD.ready)await cloudPush()}catch(rollbackError){console.error("Could not restore local data after failed "+direction+":",rollbackError)}
+  console.error("Could not apply "+direction+" operation:",e);alert(e.message||"The change could not be applied.")
+ }finally{UNDO_APPLYING=false}
+}
+const undo=()=>applyHistory("undo"),redo=()=>applyHistory("redo");
+const applyCloudSnapshotForUndo=applyCloudSnapshot;
+applyCloudSnapshot=function(data){if(UNDO_TIMER){clearTimeout(UNDO_TIMER);UNDO_TIMER=null}UNDO_PENDING=null;applyCloudSnapshotForUndo(data);loadUndoHistory(data.meta?.history);UNDO_BASE=undoState()};
+const W=(ti,b)=>{md.style.display="flex";md.innerHTML=`<div class="portal-modal-shell"><div class="modal-titlebar"><h3 style="margin:0;min-width:0;overflow-wrap:anywhere">${ti}</h3><button class="modal-close" type="button" onclick="closeModal()" aria-label="Close window" title="Close">✕</button></div><hr style="border-color:var(--b)">${b}</div>`};
+function closeModal(){md.style.display="none"}
 const TOP_SCROLL_STATES=new WeakMap();
 function topScrollUpdate(state){
  const {host,bar,track,thumb}=state,maxScroll=Math.max(0,host.scrollWidth-host.clientWidth),trackWidth=track.clientWidth;
  const thumbWidth=Math.min(trackWidth,Math.max(Math.min(20,trackWidth),trackWidth*host.clientWidth/Math.max(host.scrollWidth,1))),thumbTravel=trackWidth-thumbWidth;
- const thumbLeft=maxScroll?thumbTravel*host.scrollLeft/maxScroll:0,position=`translate(${host.scrollLeft}px,${host.scrollTop}px)`;
+ const thumbLeft=maxScroll?thumbTravel*host.scrollLeft/maxScroll:0,barTop=host.scrollTop+host.clientHeight-14;
+ if(bar.style.top!==barTop+"px")bar.style.top=barTop+"px";
  if(bar.style.width!==host.clientWidth+"px")bar.style.width=host.clientWidth+"px";
  if(thumb.style.width!==thumbWidth+"px")thumb.style.width=thumbWidth+"px";
  if(thumb.style.left!==thumbLeft+"px")thumb.style.left=thumbLeft+"px";
- if(bar.style.transform!==position)bar.style.transform=position;
+ const position=`translateX(${host.scrollLeft}px)`;if(bar.style.transform!==position)bar.style.transform=position;
  bar.setAttribute("aria-valuemax",String(maxScroll));bar.setAttribute("aria-valuenow",String(Math.round(host.scrollLeft)));
 }
 function topScrollState(host){
@@ -375,7 +605,7 @@ function topScrollState(host){
  if(state)return state;
  const bar=document.createElement("div"),track=document.createElement("div"),thumb=document.createElement("div");
  bar.className="top-scroll-proxy";bar.tabIndex=0;bar.setAttribute("role","scrollbar");bar.setAttribute("aria-label","Scroll content horizontally");bar.setAttribute("aria-orientation","horizontal");track.className="top-scroll-proxy-track";thumb.className="top-scroll-proxy-thumb";track.append(thumb);bar.append(track);
- state={host,bar,track,thumb,originalPaddingTop:host.style.paddingTop,originalPosition:host.style.position,active:false,dragging:false,dragOffset:0};
+ state={host,bar,track,thumb,originalPaddingBottom:host.style.paddingBottom,originalPosition:host.style.position,active:false,dragging:false,dragOffset:0};
  TOP_SCROLL_STATES.set(host,state);host.append(bar);
  bar.addEventListener("pointerdown",event=>{if(event.button!==0)return;event.preventDefault();const thumbRect=thumb.getBoundingClientRect();state.dragOffset=event.target===thumb?event.clientX-thumbRect.left:thumbRect.width/2;state.dragging=true;bar.classList.add("dragging");bar.setPointerCapture(event.pointerId);topScrollPointerMove(state,event)});
  bar.addEventListener("pointermove",event=>topScrollPointerMove(state,event));
@@ -394,12 +624,12 @@ function topScrollPointerMove(state,event){
 }
 function topScrollActivate(state){
  const{host,bar}=state;
- if(!state.active){const padding=parseFloat(getComputedStyle(host).paddingTop)||0;if(getComputedStyle(host).position==="static")host.style.position="relative";host.style.paddingTop=(padding+16)+"px";state.active=true}
+ if(!state.active){const padding=parseFloat(getComputedStyle(host).paddingBottom)||0;if(getComputedStyle(host).position==="static")host.style.position="relative";host.style.paddingBottom=(padding+16)+"px";state.active=true}
  bar.style.display="block";host.classList.add("top-scroll-source");topScrollUpdate(state);
 }
 function topScrollDeactivate(state){
  if(!state.active)return;
- state.host.style.paddingTop=state.originalPaddingTop;state.host.style.position=state.originalPosition;state.active=false;state.bar.style.display="none";
+ state.host.style.paddingBottom=state.originalPaddingBottom;state.host.style.position=state.originalPosition;state.active=false;state.bar.style.display="none";
 }
 function topScrollHasNestedSource(host){
  return [...host.querySelectorAll("*")].some(child=>{if(child.classList.contains("top-scroll-proxy"))return false;const style=getComputedStyle(child);return(child.classList.contains("top-scroll-source")||style.overflowX==="auto"||style.overflowX==="scroll")&&child.scrollWidth>child.clientWidth+1})
@@ -426,22 +656,22 @@ function initTopScrollbars(){
  window.addEventListener("resize",()=>roots.forEach(schedule));
 }
 const MODE={addupd:"Add new sites and update existing ones (recommended)",add:"Add new sites",update:"Update details of existing sites",progress:"Update progress (ticks)",replace:"Replace whole master list",remove:"Remove these sites (archive worked sites)"};
-function mng(){if(!mgr())return;W("⚙ Manage sites",`<p style="color:var(--m)">${isZone()?V().length+" sites in your assigned zones. Add/remove master-list sites is restricted to administrators.":SITES.length+" sites in the master list."} What do you want to do?</p><div style="display:flex;gap:12px;flex-wrap:wrap">${(adm()?[["➕","Add sites","mAdd()"],["➖","Remove sites","mRem()"],["📦","Excluded sites","excludedUI()"]]:[]).concat([["✏","Browse &amp; edit","mbr()"]]).map(x=>`<button onclick="${x[2]}" style="width:200px;padding:22px 10px;font-size:15px"><div style="font-size:30px">${x[0]}</div>${x[1]}</button>`).join("")}</div>${adm()?`<p><button onclick="undo()">${UN.length?"↶ Undo: "+esc(UN[UN.length-1].l):"↶ Nothing to undo"}</button></p>`:""}`)}
+function mng(){if(!mgr())return;const actions=(adm()?[["➕","Add sites","mAdd()"],["➖","Remove sites","mRem()"]]:[]).concat([["📦","Excluded sites","excludedUI()"],["✏","Browse &amp; edit","mbr()"]]);W("⚙ Manage sites",`<p style="color:var(--m)">${isZone()?V().length+" sites in your assigned zones. Add/remove master-list sites is restricted to administrators.":SITES.length+" sites in the master list."} What do you want to do?</p><div style="display:flex;gap:12px;flex-wrap:wrap">${actions.map(x=>`<button onclick="${x[2]}" style="width:200px;padding:22px 10px;font-size:15px"><div style="font-size:30px">${x[0]}</div>${x[1]}</button>`).join("")}</div>`)}
 let EQ="";
+const excludedVisible=e=>{if(!ME||!e)return false;if(adm())return true;const s=e.site||{};return vis({...s,zn:s.zn||DZ[s.d]||s.z})};
 function excludedUI(){
- if(!adm())return;
- const q=EQ.toLowerCase(),items=EXCLUDED.filter(e=>{const s=e.site||{};return !q||(String(s.code||"")+" "+String(s.name||"")+" "+String(s.d||"")+" "+String(s.city||"")).toLowerCase().includes(q)});
- W("📦 Excluded sites",`<p>Sites removed from the master list that had survey or other work are kept here with their site and progress data. Unworked sites are removed normally.</p><p><input placeholder="Search code, site, division or city…" value="${esc(EQ)}" oninput="EQ=this.value;excludedUI();const i=md.querySelector('input');i.focus();i.setSelectionRange(99,99)"> <button onclick="mng()">⬅ Manage sites</button></p>${items.length?`<div style="max-height:65vh;overflow:auto"><table><tr><th>RO code</th><th>Site</th><th>Division</th><th>Zone</th><th>Work</th><th>Excluded</th><th></th></tr>${items.map(e=>{const s=e.site||{},p=e.progress||{},code=String(s.code||""),codeAttribute=encodeURIComponent(code),counts=(p.tanks||[]).length,work=[p.survey&&"Survey",p.port&&"Ports",p.ready&&"Readiness",p.comm&&"Commissioning"].filter(Boolean);return`<tr><td>${esc(code)}</td><td>${esc(s.name||"")}</td><td>${esc(s.d||"")}</td><td>${esc(s.zn||"")}</td><td>${[...work,counts&&counts+" tank(s)"].filter(Boolean).join(", ")||"Other site data"}</td><td>${esc(e.excludedAt?new Date(e.excludedAt).toLocaleString():"Unknown")}</td><td><button data-code="${codeAttribute}" onclick="excludedDetails(decodeURIComponent(this.dataset.code))">View data</button> <button data-code="${codeAttribute}" onclick="excludedRestore(decodeURIComponent(this.dataset.code))">Restore</button></td></tr>`}).join("")}</table></div>`:`<p style="color:var(--m)">${EXCLUDED.length?"No excluded sites match this search.":"There are no excluded sites."}</p>`}`)
+ if(!ME)return;
+ const scoped=EXCLUDED.filter(excludedVisible),q=EQ.toLowerCase(),items=scoped.filter(e=>{const s=e.site||{};return !q||(String(s.code||"")+" "+String(s.name||"")+" "+String(s.d||"")+" "+String(s.city||"")).toLowerCase().includes(q)});
+ W("📦 Excluded sites",`<div class="excluded-shell"><div class="excluded-fixed"><p>Sites removed from the master list that had survey or other work are kept here with their site and progress data. ${adm()?"Unworked sites are removed normally.":"You can view excluded sites in your assigned scope; only administrators and the owner can restore them."}</p><p class="excluded-controls"><input placeholder="Search code, site, division or city…" value="${esc(EQ)}" oninput="EQ=this.value;excludedUI();const i=md.querySelector('.excluded-controls input');i.focus();i.setSelectionRange(99,99)"> ${mgr()?`<button onclick="mng()">⬅ Manage sites</button>`:""}</p></div><div class="excluded-body">${items.length?`<div class="det-table-scroll"><table><tr><th>RO code</th><th>Site</th><th>Division</th><th>Zone</th><th>Work</th><th>Excluded</th><th></th></tr>${items.map(e=>{const s=e.site||{},p=e.progress||{},code=String(s.code||""),codeAttribute=encodeURIComponent(code),counts=(p.tanks||[]).length,work=[p.survey&&"Survey",p.port&&"Ports",p.ready&&"Readiness",p.comm&&"Commissioning"].filter(Boolean);return`<tr><td>${esc(code)}</td><td>${esc(s.name||"")}</td><td>${esc(s.d||"")}</td><td>${esc(s.zn||"")}</td><td>${[...work,counts&&counts+" tank(s)"].filter(Boolean).join(", ")||"Other site data"}</td><td>${esc(e.excludedAt?new Date(e.excludedAt).toLocaleString():"Unknown")}</td><td><button data-code="${codeAttribute}" onclick="excludedDetails(decodeURIComponent(this.dataset.code))">View data</button> ${adm()?`<button data-code="${codeAttribute}" onclick="excludedRestore(decodeURIComponent(this.dataset.code))">Restore</button>`:""}</td></tr>`}).join("")}</table></div>`:`<p style="color:var(--m)">${scoped.length?"No excluded sites match this search.":EXCLUDED.length?"No excluded sites in your access scope.":"There are no excluded sites."}</p>`}</div></div>` )
 }
 async function excludedDetails(code){
- if(!adm())return;
  const e=EXCLUDED.find(item=>String(item.site?.code)===String(code));
- if(!e)return alert("That excluded site is no longer available.");
+ if(!e||!excludedVisible(e))return alert("That excluded site is no longer available in your access scope.");
  const progress=e.progress||{},tanks=Array.isArray(progress.tanks)?progress.tanks:[],keys=Array.isArray(e.photoKeys)?e.photoKeys:tanks.filter(t=>t&&t.id).map(t=>({siteCode:String(code),tankId:String(t.id)})),groups=await Promise.all(keys.map(async key=>({tankId:String(key.tankId),images:await pget(String(key.siteCode)+"|"+String(key.tankId))}))),photosByTank=new Map(groups.map(group=>[group.tankId,group.images])),codeAttribute=encodeURIComponent(String(code));
  const required=tanks.filter(t=>t.cat&&t.cat!=="CAT1"),installedTanks=required.filter(t=>["Done","Already avail.","ATG already installed"].includes(t.pst)),installed=progress.port&&!installedTanks.length?required.length:installedTanks.length;
  const tankRows=tanks.map((tank,i)=>{const calculated=calc(tank),values=COLS.map(([,key])=>{const value=CALC[key]?calculated[key]:key==="hgt"?portHeight(tank[key]):tank[key];return`<td${CALC[key]?' style="color:#7dd3fc;text-align:right;min-width:50px"':""}>${esc(value??"")}</td>`}).join(""),images=(photosByTank.get(String(tank.id))||[]).map((src,j)=>`<img src="${esc(src).replace(/"/g,"&quot;")}" alt="Tank ${i+1} photo ${j+1}" loading="lazy" style="height:42px;border-radius:4px;margin-right:4px">`).join("");return`<tr><td><b>T${i+1}</b></td>${values}<td style="min-width:150px">${images}</td><td style="color:#f87171;min-width:130px">${esc(calculated.w||"")}</td><td></td></tr>`}).join("");
  const tableHead=`<tr><th>Tank</th>${COLS.map(([heading,key,unit])=>`<th>${heading}<br><small style="color:var(--m);font-weight:400">${CALC[key]?"automatic":Array.isArray(unit)?"choose":unit||""}</small></th>`).join("")}<th>Pictures<br><small style="color:var(--m);font-weight:400">stored photos</small></th><th></th><th></th></tr>`;
- W("📦 "+esc(e.site?.name||code),`<div class="det" style="width:1300px;max-width:98vw;max-height:85vh;overflow:auto"><p><b>${esc(String(code))}</b> · ${esc(e.site?.d||"")} · ${esc(e.site?.zn||"")} · excluded ${esc(e.excludedAt?new Date(e.excludedAt).toLocaleString():"at an unknown time")}</p><p>Reason: ${esc(e.reason||"Removed from master list")} · Removed by: ${esc(e.excludedBy||"Unknown")}</p>${e.site?.lat?`<a href="https://www.google.com/maps?q=${encodeURIComponent(String(e.site.lat)+","+String(e.site.lng))}" target="_blank" rel="noopener">📍 Open in Google Maps</a>`:""}<p style="background:var(--panel);padding:8px 10px;border-radius:8px">Archived site data is read-only. Restore the site to return it to the active site list.</p><table>${tableHead}${tankRows||'<tr><td colspan="20" style="color:var(--m)">No tanks recorded.</td></tr>'}</table><p id="sl" style="font-size:14px;background:var(--panel);padding:8px 10px;border-radius:8px">Tanks: <b>${tanks.length}</b> (CAT1 ${tanks.filter(t=>t.cat==="CAT1").length} · CAT2 ${tanks.filter(t=>t.cat==="CAT2").length} · CAT3 ${tanks.filter(t=>t.cat==="CAT3").length}) → ports required: <b>${required.length}</b> · installed: <b>${installed}</b> · remaining: <b>${required.length-installed}</b>. <span style="color:var(--m)">CAT1 tanks already have a port.</span></p><h4 style="margin:10px 0 4px">Site details</h4><table><tr><td>Surveyed by</td><td>${esc(progress.by||"—")}</td></tr><tr><td>Site readiness</td><td>${progress.ready?"Done":"—"}</td></tr><tr><td>ATG commissioning</td><td>${progress.comm?"Done":"—"}</td></tr><tr><td>Remarks</td><td>${esc(progress.rm||"—")}</td></tr></table><p><button data-code="${codeAttribute}" onclick="excludedRestore(decodeURIComponent(this.dataset.code))">Restore site to master list</button> <button onclick="excludedUI()">⬅ Excluded sites</button></p></div>`)
+ W("📦 "+esc(e.site?.name||code),`<div class="det"><div class="det-fixed"><p><b>${esc(String(code))}</b> · ${esc(e.site?.d||"")} · ${esc(e.site?.zn||"")} · excluded ${esc(e.excludedAt?new Date(e.excludedAt).toLocaleString():"at an unknown time")}</p><p>Reason: ${esc(e.reason||"Removed from master list")} · Removed by: ${esc(e.excludedBy||"Unknown")}</p>${e.site?.lat?`<a href="https://www.google.com/maps?q=${encodeURIComponent(String(e.site.lat)+","+String(e.site.lng))}" target="_blank" rel="noopener">📍 Open in Google Maps</a>`:""}<p style="background:var(--panel);padding:8px 10px;border-radius:8px">Archived site data is read-only. Restore the site to return it to the active site list.</p></div><div class="det-body"><div class="det-table-scroll"><table>${tableHead}${tankRows||'<tr><td colspan="20" style="color:var(--m)">No tanks recorded.</td></tr>'}</table></div><p id="sl" style="font-size:14px;background:var(--panel);padding:8px 10px;border-radius:8px">Tanks: <b>${tanks.length}</b> (CAT1 ${tanks.filter(t=>t.cat==="CAT1").length} · CAT2 ${tanks.filter(t=>t.cat==="CAT2").length} · CAT3 ${tanks.filter(t=>t.cat==="CAT3").length}) → ports required: <b>${required.length}</b> · installed: <b>${installed}</b> · remaining: <b>${required.length-installed}</b>. <span style="color:var(--m)">CAT1 tanks already have a port.</span></p><h4 style="margin:10px 0 4px">Site details</h4><table><tr><td>Surveyed by</td><td>${esc(progress.by||"—")}</td></tr><tr><td>Site readiness</td><td>${progress.ready?"Done":"—"}</td></tr><tr><td>ATG commissioning</td><td>${progress.comm?"Done":"—"}</td></tr><tr><td>Remarks</td><td>${esc(progress.rm||"—")}</td></tr></table><p>${adm()?`<button data-code="${codeAttribute}" onclick="excludedRestore(decodeURIComponent(this.dataset.code))">Restore site to master list</button> `:""}<button onclick="excludedUI()">⬅ Excluded sites</button></p></div></div>`)
 }
 async function excludedRestore(code){
  if(!adm())return;
@@ -454,13 +684,18 @@ async function excludedRestore(code){
  const previousSites=SITES,previousRecords=S;
  SITES=[...SITES,JSON.parse(JSON.stringify(entry.site))];
  S={...S,[String(code)]:JSON.parse(JSON.stringify(entry.progress||{}))};
+ UNDO_DEFERRED=true;
  try{
   saveSites();save();
   if(CLOUD.ready&&ME)await cloudPush();
   await persistExcludedSites(EXCLUDED.filter(item=>String(item.site?.code)!==String(code)));
+  UNDO_DEFERRED=false;
+  commitUndo("Restore "+name);
  }catch(e){
+  UNDO_DEFERRED=true;
   SITES=previousSites;S=previousRecords;
   try{saveSites();save();if(CLOUD.ready&&ME)await cloudPush()}catch(rollbackError){console.error("Could not roll back failed excluded-site restore:",rollbackError)}
+  finally{UNDO_DEFERRED=false;UNDO_BASE=undoState();UNDO_PENDING=null}
   alert("The site could not be fully restored. Its archived record remains available when possible. "+(e.message||e));
   return;
  }
@@ -528,13 +763,13 @@ const COLS=[["Product type","prod","e.g. PMG1",9,"dl_prod"],["Capacity","cap","l
 function det(c){const s=SITES.find(x=>x.code===c);if(!s||!vis(s))return;CUR=c;const d=g(s),e=can(s),T=d.tanks=d.tanks||[],ds=(T.forEach(t=>{if(!t.id)t.id=uid()}),e?"":"disabled");
 const cell=(t,i,[h,k,x,sz,dl])=>CALC[k]?`<td id="k_${i}_${k}" style="color:#7dd3fc;text-align:right;min-width:50px">${calc(t)[k]??""}</td>`:Array.isArray(x)?`<td><select ${ds} data-i="${i}" data-k="${k}" onchange="sv(this)">${OPT(x,t[k])}</select></td>`:`<td><input ${ds} data-i="${i}" data-k="${k}" size="${sz}" ${dl?`list="${dl}"`:""} value="${esc(k==="hgt"?portHeight(t[k]):t[k]??"")}" oninput="sv(this)"></td>`;
 const row=(t,i)=>`<tr><td><b>T${i+1}</b></td>${COLS.map(q=>cell(t,i,q)).join("")}<td id="ph_${i}" style="min-width:150px"></td><td id="w_${i}" style="color:#f87171;min-width:130px">${calc(t).w}</td><td style="white-space:nowrap">${e?`<button title="Copy capacity, port and category from the tank above" onclick="cpy(${i})">⧉</button> <button title="Remove this tank" onclick="tdel(${i})">✕</button>`:""}</td></tr>`;
-md.style.display="flex";md.innerHTML=`<div class="det" style="width:1300px;max-width:98vw;max-height:92vh;overflow:auto">${DLS}<div style="display:flex;justify-content:space-between"><h3 style="margin:0">📝 <span class="sn">${esc(s.name)}</span> <small style="color:var(--m)">${s.code} · ${s.d} · ${s.zn||""} · ${s.p}-site</small></h3><button onclick="md.style.display='none';draw()">✕</button></div>${s.lat?`<a href="https://www.google.com/maps?q=${s.lat},${s.lng}" target="_blank" rel="noopener">📍 Open in Google Maps</a>`:""}
-<p style="background:#0b1220;padding:8px 10px;border-radius:8px">① Press <b>+ Add tank</b> once for every tank at this site. ② Fill the <b>white boxes</b>. The <span style="color:#7dd3fc">blue numbers</span> work themselves out. ③ Fill the <b>site details</b> below. ✔ Everything saves automatically.</p>
-<table><tr><th>Tank</th>${COLS.map(q=>`<th>${q[0]}<br><small style="color:var(--m);font-weight:400">${CALC[q[1]]?"automatic":Array.isArray(q[2])?"choose":q[2]}</small></th>`).join("")}<th>Pictures<br><small style="color:var(--m);font-weight:400">add photos</small></th><th></th><th></th></tr>${T.map(row).join("")||'<tr><td colspan=18 style="color:var(--m)">No tanks yet. Press "+ Add tank".</td></tr>'}</table>
+md.style.display="flex";md.innerHTML=`<div class="det">${DLS}<div class="det-fixed"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 style="margin:0">📝 <span class="sn">${esc(s.name)}</span> <small style="color:var(--m)">${s.code} · ${s.d} · ${s.zn||""} · ${s.p}-site</small></h3><button onclick="md.style.display='none';draw()" aria-label="Close survey entry">✕</button></div>${s.lat?`<a href="https://www.google.com/maps?q=${s.lat},${s.lng}" target="_blank" rel="noopener">📍 Open in Google Maps</a>`:""}
+<p style="background:#0b1220;padding:8px 10px;border-radius:8px;margin:8px 0">① Press <b>+ Add tank</b> once for every tank at this site. ② Fill the <b>white boxes</b>. The <span style="color:#7dd3fc">blue numbers</span> work themselves out. ③ Fill the <b>site details</b> below. ✔ Everything saves automatically.</p></div>
+<div class="det-body"><div class="det-table-scroll"><table><tr><th>Tank</th>${COLS.map(q=>`<th>${q[0]}<br><small style="color:var(--m);font-weight:400">${CALC[q[1]]?"automatic":Array.isArray(q[2])?"choose":q[2]}</small></th>`).join("")}<th>Pictures<br><small style="color:var(--m);font-weight:400">add photos</small></th><th></th><th></th></tr>${T.map(row).join("")||'<tr><td colspan=18 style="color:var(--m)">No tanks yet. Press "+ Add tank".</td></tr>'}</table></div>
 <p>${e?`<button onclick="tadd()" style="background:#16a34a;border-color:#16a34a">+ Add tank</button> `:""}<small style="color:var(--m)">⧉ copies the tank above · Category: CAT1 = port already there · CAT2 / CAT3 = a port must be installed</small></p>
 <p id="sl" style="font-size:14px;background:#0b1220;padding:8px 10px;border-radius:8px"></p>
 <h4 style="margin:10px 0 4px">Site details</h4><table><tr><td>Surveyed by</td><td><input ${ds} size=20 value="${esc(d.by||ME.label)}" oninput="sf3('by',this.value)"></td></tr><tr><td>Site readiness</td><td><select ${ds} onchange="sf3('ready',this.value)">${OPT(["","Done"],d.ready?"Done":"")}</select></td></tr><tr><td>ATG commissioning</td><td><select ${ds} onchange="sf3('comm',this.value)">${OPT(["","Done"],d.comm?"Done":"")}</select></td></tr><tr><td>Remarks</td><td><input ${ds} size=60 value="${esc(d.rm||"")}" oninput="sf3('rm',this.value)"></td></tr></table>
-<p>${e?`<button onclick="nxt()">💾 Save &amp; next site</button> `:""}<button onclick="md.style.display='none';draw()">✔ Done, close</button></p></div>`;sline();phAll()}
+<p>${e?`<button onclick="nxt()">💾 Save &amp; next site</button> `:""}<button onclick="md.style.display='none';draw()">✔ Done, close</button></p></div></div>`;sline();phAll();}
 function sline(){const S0=SITES.find(x=>x.code===CUR),k=tkStat(S0),T=g(S0).tanks||[],n=q=>T.filter(t=>t.cat===q).length,el=document.getElementById("sl");if(el)el.innerHTML=`Tanks: <b>${T.length}</b> (CAT1 ${n("CAT1")} · CAT2 ${n("CAT2")} · CAT3 ${n("CAT3")}) → ports required: <b>${k.r}</b> · installed: <b>${k.i}</b> (by us ${k.dn} · already avail. ${k.av} · ATG already installed ${k.at}) · remaining: <b>${k.r-k.i}</b>. <span style="color:var(--m)">CAT1 tanks already have a port.</span>`}
 function sf3(k,v){const s=SITES.find(x=>x.code===CUR);if(!can(s))return;const d=g(s);if(k==="portst"){d.portst=v;d.port=!!v}else if(k==="ready"||k==="comm")d[k]=v==="Done";else d[k]=v;if(!d.by)d.by=ME.label;save()}
 function sv(el){const s=SITES.find(x=>x.code===CUR);if(!can(s))return;const d=g(s),T=d.tanks,i=+el.dataset.i;T[i][el.dataset.k]=el.value;d.survey=true;if(!d.by)d.by=ME.label;syncPort(CUR);save();uc(i);sline()}
@@ -631,7 +866,7 @@ setInterval(seen,60000);
 function team(){if(!own())return;const now=Date.now(),ago=x=>{const m=Math.round((now-x)/60000);return m<1?"just now":m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":Math.round(m/1440)+" d ago"},U=[...(AUTH.owner?.email?[{label:AUTH.owner.email,role:"owner",divs:["*"]}]:[]),...AUTH.tokens];
 W("👥 Team activity",`<p style="color:var(--m)">This is the shared activity history from all authorized portal sessions.</p><table><tr><th>Person</th><th>Role</th><th>Access</th><th>Status</th><th>Logins</th></tr>${U.map(u=>{const s=SEEN[u.label],on=s&&now-s.t<180000;return`<tr><td>${esc(u.label)}</td><td>${u.role==="zone"?"Zone user":u.role}</td><td>${u.role==="zone"?(u.zones||[]).join(", "):(u.divs||[]).join(", ")}</td><td>${s?(on?"🟢 Online":"⚪ last active "+ago(s.t)):"— never seen"}</td><td>${LOG.filter(l=>l.u===u.label&&l.a==="logged in").length}</td></tr>`}).join("")}</table><h4>Recent activity</h4><div style="max-height:40vh;overflow:auto"><table>${LOG.slice(-40).reverse().map(l=>`<tr><td>${new Date(l.t).toLocaleString()}</td><td>${esc(l.u)}</td><td>${esc(l.a)}</td></tr>`).join("")||"<tr><td>No activity yet</td></tr>"}</table></div>`)}
 function hrec(){if(!ME||!adm())return;try{const A=V(),Q=PT(A),row=[A.length,...ST.map(x=>A.filter(s=>g(s)[x[0]]).length),Q.i],H=JSON.parse(localStorage.getItem("atg_hist")||"{}"),k=new Date().toISOString().slice(0,10);if(JSON.stringify(H[k])!==JSON.stringify(row)){H[k]=row;localStorage.setItem("atg_hist",JSON.stringify(H));queueMetaSave("history",H)}}catch(e){}}
-function hchart(){let H={};try{H=JSON.parse(localStorage.getItem("atg_hist")||"{}")}catch(e){}const ks=Object.keys(H).sort().slice(-60),W_=620,Hh=190,mx=Math.max(1,...ks.flatMap(k=>H[k].slice(1,5)));if(ks.length<2)return`<h4>Progress over time</h4><p style="color:var(--m)">The graph appears once there are at least 2 days of history. Today's numbers are saved automatically every day.</p>`;const X=i=>40+i*(W_-60)/(ks.length-1),Y=v=>Hh-25-v/mx*(Hh-45),cl=ST.map(x=>COL[x[0]]);return`<h4>Progress over time (sites)</h4><svg width="${W_}" height="${Hh}" style="max-width:100%"><line x1="40" y1="${Hh-25}" x2="${W_-20}" y2="${Hh-25}" stroke="#475569"/>${ST.map((x,j)=>`<polyline fill="none" stroke="${cl[j]}" stroke-width="2.5" points="${ks.map((k,i)=>X(i)+","+Y(H[k][j+1])).join(" ")}"/>`).join("")}<text x="4" y="${Y(mx)+4}" fill="#94a3b8" font-size="10">${mx}</text><text x="40" y="${Hh-8}" fill="#94a3b8" font-size="10">${ks[0]}</text><text x="${W_-80}" y="${Hh-8}" fill="#94a3b8" font-size="10">${ks[ks.length-1]}</text></svg><div style="font-size:12px">${ST.map((x,j)=>`<span style="color:${cl[j]}">● ${x[1]}</span>`).join(" &nbsp; ")}</div>`}
+function hchart(){let H={};try{H=JSON.parse(localStorage.getItem("atg_hist")||"{}")}catch(e){}const ks=Object.keys(H).filter(k=>/^\d{4}-\d{2}-\d{2}$/.test(k)).sort().slice(-60),W_=620,Hh=190,mx=Math.max(1,...ks.flatMap(k=>H[k].slice(1,5)));if(ks.length<2)return`<h4>Progress over time</h4><p style="color:var(--m)">The graph appears once there are at least 2 days of history. Today's numbers are saved automatically every day.</p>`;const X=i=>40+i*(W_-60)/(ks.length-1),Y=v=>Hh-25-v/mx*(Hh-45),cl=ST.map(x=>COL[x[0]]);return`<h4>Progress over time (sites)</h4><svg width="${W_}" height="${Hh}" style="max-width:100%"><line x1="40" y1="${Hh-25}" x2="${W_-20}" y2="${Hh-25}" stroke="#475569"/>${ST.map((x,j)=>`<polyline fill="none" stroke="${cl[j]}" stroke-width="2.5" points="${ks.map((k,i)=>X(i)+","+Y(H[k][j+1])).join(" ")}"/>`).join("")}<text x="4" y="${Y(mx)+4}" fill="#94a3b8" font-size="10">${mx}</text><text x="40" y="${Hh-8}" fill="#94a3b8" font-size="10">${ks[0]}</text><text x="${W_-80}" y="${Hh-8}" fill="#94a3b8" font-size="10">${ks[ks.length-1]}</text></svg><div style="font-size:12px">${ST.map((x,j)=>`<span style="color:${cl[j]}">● ${x[1]}</span>`).join(" &nbsp; ")}</div>`}
 const _dr=draw;draw=function(k){_dr(k);hrec()};const _ov=ov;ov=function(){_ov();md.firstElementChild.insertAdjacentHTML("beforeend",hchart())};
 let FMTS=[];const FB=[{name:"Standard survey sheet (Survey Sheet / Survey Format)",req:["sitecode","tank","producttype","capacity","h1","h2","h3","category"],alias:{}}];
 function fmtLoad(){try{FMTS=JSON.parse(localStorage.getItem("atg_fmt")||"null")||JSON.parse(JSON.stringify(FB))}catch(e){FMTS=JSON.parse(JSON.stringify(FB))}FMTS.forEach(f=>Object.entries(f.alias||{}).forEach(([k,v])=>{if(SKEY[k]&&!SKEY[k].includes(v))SKEY[k].push(v)}))}
